@@ -16,7 +16,7 @@
 #define PIN_SONAR_2_ECHO 10
 #define PIN_SONAR_2_TRIG 11
 
-#define IR_RECEIVE_PIN 12
+#define IR_RECEIVE_PIN 2
 
 
 //BUTTON DEFINITIONS
@@ -73,9 +73,8 @@ int get_sonar_distance(unsigned char sonar_ind);
 void measure_sonar_distance(unsigned char sonar_ind);
 
 //Remote
-void setup_remote();
+bool check_ir_button_pressed();
 unsigned char get_ir_button();
-bool get_is_ir_pressed();
 
 #ifdef USE_DISPLAY
 

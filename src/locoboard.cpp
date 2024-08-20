@@ -1,6 +1,8 @@
 #include "locoboard.h"
 
 #include <Servo.h>
+
+// #define USE_CALLBACK_FOR_TINY_RECEIVER
 #include <TinyIRReceiver.hpp>
 
 #ifdef USE_DISPLAY
@@ -66,11 +68,6 @@ void setup_servo(unsigned char servo_ind, unsigned char pin)
   servo[servo_ind].attach(pin);
 }
 
-void setup_remote()
-{
-  initPCIInterruptForTinyReceiver();
-}
-
 void setup_sonar(unsigned char sonar_ind, unsigned char trig_pin, unsigned char echo_pin)
 {
   sonar[sonar_ind].echo_pin = echo_pin;
@@ -95,26 +92,19 @@ int get_sonar_distance(unsigned char sonar_ind)
   return sonar[sonar_ind].distance;
 }
 
+bool check_ir_button_pressed()
+{
+  if(TinyReceiverDecode())
+  {
+    remote.button = TinyIRReceiverData.Command;
+    return true;
+  }
+  else return false;
+}
+
 unsigned char get_ir_button()
 {
   return remote.button;
-}
-
-bool get_is_ir_pressed()
-{
-  if (remote.keypress_registered)
-  {
-    remote.keypress_registered = 0;
-    return 1;
-  }
-  else return 0;
-  return 0;
-}
-
-void handleReceivedTinyIRData(uint8_t aAddress, uint8_t aCommand, uint8_t aFlags)
-{
-  remote.button = aCommand;
-  remote.keypress_registered = 1;
 }
 
 #ifdef USE_DISPLAY
