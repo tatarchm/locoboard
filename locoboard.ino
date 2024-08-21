@@ -18,6 +18,12 @@ void process_remote_button()
         test_distance_sensors();
         break;
       }
+      case BTN_2:
+      {
+        Serial.println("Testing potentiometer");
+        test_potentiometer();
+        break;
+      }
     }
   }
 }
@@ -37,6 +43,17 @@ void test_display()
   clear_display();
   draw_line(0, 0, 10, 10);
   show();
+}
+
+void test_potentiometer()
+{
+  int val = 0;
+  for (int i = 0; i < 1000; i++)
+  {
+    val = read_potentiometer_value();
+    Serial.println(val);
+    delay(10);
+  }
 }
 
 void setup()

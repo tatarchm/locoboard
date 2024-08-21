@@ -80,22 +80,6 @@ void setup_sonar(unsigned char sonar_ind, unsigned char trig_pin, unsigned char 
   pinMode(sonar[sonar_ind].echo_pin, INPUT);
 }
 
-void measure_sonar_distance(unsigned char sonar_ind)
-{
-  digitalWrite(sonar[sonar_ind].trig_pin, HIGH);
-  delayMicroseconds(10);
-  digitalWrite(sonar[sonar_ind].trig_pin, LOW);
-
-  float duration_us = pulseIn(sonar[sonar_ind].echo_pin, HIGH);
-  float distance_cm = 0.017 * duration_us;
-  if(distance_cm > 0) sonar[sonar_ind].distance = (int)(0.017 * duration_us);
-}
-
-int get_sonar_distance(unsigned char sonar_ind)
-{
-  return sonar[sonar_ind].distance;
-}
-
 void select_distance_sensor(uint8_t i) {
   if (i > 3) return;
 
@@ -144,6 +128,11 @@ bool check_ir_button_pressed()
 unsigned char get_ir_button()
 {
   return remote.button;
+}
+
+int read_potentiometer_value()
+{
+  return analogRead(PIN_POTENTIOMETER);
 }
 
 #ifdef USE_DISPLAY

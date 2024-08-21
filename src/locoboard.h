@@ -19,11 +19,7 @@
 #define PIN_SERVO_2 9
 #define PIN_SERVO_3 10
 
-#define PIN_SONAR_1_ECHO 2
-#define PIN_SONAR_1_TRIG 3
-
-#define PIN_SONAR_2_ECHO 10
-#define PIN_SONAR_2_TRIG 11
+#define PIN_POTENTIOMETER A1
 
 #define IR_RECEIVE_PIN 2
 
@@ -74,11 +70,6 @@ void setup_motor_pins(unsigned char motor_ind, unsigned char pin_a, unsigned cha
 void rotate_servo(unsigned char servo_ind, unsigned char degrees);
 void setup_servo(unsigned char servo_ind, unsigned char pin);
 
-//Sonar
-void setup_sonar(unsigned char sonar_ind, unsigned char trig_pin, unsigned char echo_pin);
-int get_sonar_distance(unsigned char sonar_ind);
-void measure_sonar_distance(unsigned char sonar_ind);
-
 //Distance
 void setup_distance_sensors();
 int measure_distance_mm(unsigned char sensor_id);
@@ -87,6 +78,9 @@ int measure_distance_mm(unsigned char sensor_id);
 void setup_ir();
 bool check_ir_button_pressed();
 unsigned char get_ir_button();
+
+//Potentiometer
+int read_potentiometer_value();
 
 #ifdef USE_DISPLAY
 
