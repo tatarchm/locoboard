@@ -24,6 +24,12 @@ void process_remote_button()
         test_potentiometer();
         break;
       }
+      case BTN_3:
+      {
+        Serial.println("Testing servo");
+        test_servo();
+        break;
+      }
     }
   }
 }
@@ -56,6 +62,17 @@ void test_potentiometer()
   }
 }
 
+void test_servo()
+{
+  for(int i=0; i<=180; i+=5)
+  {
+    rotate_servo(SERVO_S1, i);
+    rotate_servo(SERVO_S2, i);
+    rotate_servo(SERVO_S3, i);
+    delay(50);
+  }
+}
+
 void setup()
 {
   Serial.begin(115200);
@@ -63,6 +80,7 @@ void setup()
   setup_display();
   setup_ir();
   setup_distance_sensors();
+  setup_servo_pins();
 }
 
 void loop()

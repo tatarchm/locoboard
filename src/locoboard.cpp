@@ -67,9 +67,11 @@ void rotate_servo(unsigned char servo_ind, unsigned char degrees)
   servo[servo_ind].write(degrees);
 }
 
-void setup_servo(unsigned char servo_ind, unsigned char pin)
+void setup_servo_pins()
 {
-  servo[servo_ind].attach(pin);
+  servo[0].attach(PIN_SERVO_1);
+  servo[1].attach(PIN_SERVO_2);
+  servo[2].attach(PIN_SERVO_3);
 }
 
 void setup_sonar(unsigned char sonar_ind, unsigned char trig_pin, unsigned char echo_pin)

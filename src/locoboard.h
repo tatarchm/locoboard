@@ -68,7 +68,7 @@ void setup_motor_pins(unsigned char motor_ind, unsigned char pin_a, unsigned cha
 
 // Servo control
 void rotate_servo(unsigned char servo_ind, unsigned char degrees);
-void setup_servo(unsigned char servo_ind, unsigned char pin);
+void setup_servo_pins();
 
 //Distance
 void setup_distance_sensors();
