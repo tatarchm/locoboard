@@ -9,6 +9,11 @@
 #define DISTANCE_L2 1
 #define DISTANCE_L3 2
 
+#define LED_1 0
+#define LED_2 1
+#define LED_3 2
+#define LED_4 3
+
 // PIN DEFINITIONS
 #define PIN_MOTOR_A1A 4
 #define PIN_MOTOR_A1B 5
@@ -20,6 +25,7 @@
 #define PIN_SERVO_3 10
 
 #define PIN_POTENTIOMETER A1
+#define PIN_ADDR_LED A2
 
 #define IR_RECEIVE_PIN 2
 
@@ -81,6 +87,10 @@ unsigned char get_ir_button();
 
 //Potentiometer
 int read_potentiometer_value();
+
+//Address LEDs
+void setup_addr_leds();
+void set_led_color(unsigned char led_index, unsigned char r, unsigned char g, unsigned char b);
 
 #ifdef USE_DISPLAY
 

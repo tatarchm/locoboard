@@ -3,6 +3,7 @@
 #include <Servo.h>
 #include <VL53L0X.h>
 #include <Wire.h>
+#include <FastLED.h>
 
 #define DISTANCE_SW_ADDR 0x73
 // #define USE_CALLBACK_FOR_TINY_RECEIVER
@@ -17,6 +18,7 @@ Servo servo[3];
 Sonar sonar[3];
 VL53L0X distance_sensor[3];
 Remote remote;
+CRGB leds[4];
 
 #ifdef USE_DISPLAY
 Adafruit_SSD1306 display(128, 64, &Wire, -1);
@@ -135,6 +137,17 @@ unsigned char get_ir_button()
 int read_potentiometer_value()
 {
   return analogRead(PIN_POTENTIOMETER);
+}
+
+void setup_addr_leds()
+{
+  FastLED.addLeds<WS2812, PIN_ADDR_LED, RGB>(leds, 4);
+}
+
+void set_led_color(unsigned char led_index, unsigned char r, unsigned char g, unsigned char b)
+{
+  leds[led_index] = CRGB(r, g, b);
+  FastLED.show();
 }
 
 #ifdef USE_DISPLAY

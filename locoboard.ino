@@ -6,12 +6,14 @@ void process_remote_button()
   {
     switch(get_ir_button())
     {
+      #ifdef USE_DISPLAY
       case BTN_0:
       {
         Serial.println("Testing display");
         test_display();
         break;
       }
+      #endif
       case BTN_1:
       {
         Serial.println("Testing distance sensor");
@@ -30,6 +32,12 @@ void process_remote_button()
         test_servo();
         break;
       }
+      case BTN_4:
+      {
+        Serial.println("Testing address LEDs");
+        test_addr_leds();
+        break;
+      }
     }
   }
 }
@@ -44,12 +52,14 @@ void test_distance_sensors()
   Serial.println(measure_distance_mm(DISTANCE_L3));
 }
 
+#ifdef USE_DISPLAY
 void test_display()
 {
   clear_display();
   draw_line(0, 0, 10, 10);
   show();
 }
+#endif
 
 void test_potentiometer()
 {
@@ -73,14 +83,38 @@ void test_servo()
   }
 }
 
+void test_addr_leds()
+{
+  for(int i=0; i<255; i+=20)
+  {
+    for(int j=0; j<255; j+=20)
+    {
+      for(int k=0; k<255; k+=20)
+      {
+        set_led_color(LED_1, i, j, k);
+        set_led_color(LED_2, i, k, j);
+        set_led_color(LED_3, j, i, k);
+        set_led_color(LED_4, j, k, i);
+      }
+    }
+  }
+  set_led_color(LED_1, 0, 0, 0);
+  set_led_color(LED_2, 0, 0, 0);
+  set_led_color(LED_3, 0, 0, 0);
+  set_led_color(LED_4, 0, 0, 0);
+}
+
 void setup()
 {
   Serial.begin(115200);
   
+  #ifdef USE_DISPLAY
   setup_display();
+  #endif
   setup_ir();
   setup_distance_sensors();
   setup_servo_pins();
+  setup_addr_leds();
 }
 
 void loop()
