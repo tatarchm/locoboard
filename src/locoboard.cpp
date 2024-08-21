@@ -1,7 +1,10 @@
 #include "locoboard.h"
 
 #include <Servo.h>
+#include <VL53L0X.h>
+#include <Wire.h>
 
+#define DISTANCE_SW_ADDR 0x73
 // #define USE_CALLBACK_FOR_TINY_RECEIVER
 #include <TinyIRReceiver.hpp>
 
@@ -12,6 +15,7 @@
 Motor motor[2];
 Servo servo[3];
 Sonar sonar[3];
+VL53L0X distance_sensor[3];
 Remote remote;
 
 #ifdef USE_DISPLAY
@@ -90,6 +94,41 @@ void measure_sonar_distance(unsigned char sonar_ind)
 int get_sonar_distance(unsigned char sonar_ind)
 {
   return sonar[sonar_ind].distance;
+}
+
+void select_distance_sensor(uint8_t i) {
+  if (i > 3) return;
+
+  Wire.beginTransmission(DISTANCE_SW_ADDR);
+  Wire.write(1 << i);
+  Wire.endTransmission();
+}
+
+void setup_distance_sensors()
+{
+  for(int i=0; i<3; i++)
+  {
+    select_distance_sensor(i);
+    distance_sensor[i].setTimeout(500);
+    distance_sensor[i].init();
+    distance_sensor[i].setMeasurementTimingBudget(200000);
+  }
+}
+
+int measure_distance_mm(unsigned char sensor_id)
+{
+  select_distance_sensor(sensor_id);
+  int measurement = distance_sensor[sensor_id].readRangeSingleMillimeters();
+  if(distance_sensor[sensor_id].timeoutOccurred()) return -1;
+  else return measurement;
+}
+
+void setup_ir()
+{
+  if (!initPCIInterruptForTinyReceiver())
+  {
+    Serial.println("No interrupt available for defined pin.");
+  }
 }
 
 bool check_ir_button_pressed()

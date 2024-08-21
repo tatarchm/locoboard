@@ -1,5 +1,14 @@
 #include "../modules.h"
 
+// SENSOR INDICES
+#define SERVO_S1 0
+#define SERVO_S2 1
+#define SERVO_S3 2
+
+#define DISTANCE_L1 0
+#define DISTANCE_L2 1
+#define DISTANCE_L3 2
+
 // PIN DEFINITIONS
 #define PIN_MOTOR_A1A 4
 #define PIN_MOTOR_A1B 5
@@ -18,9 +27,7 @@
 
 #define IR_RECEIVE_PIN 2
 
-
 //BUTTON DEFINITIONS
-
 #define BTN_0 25
 #define BTN_1 69
 #define BTN_2 70
@@ -72,7 +79,12 @@ void setup_sonar(unsigned char sonar_ind, unsigned char trig_pin, unsigned char 
 int get_sonar_distance(unsigned char sonar_ind);
 void measure_sonar_distance(unsigned char sonar_ind);
 
+//Distance
+void setup_distance_sensors();
+int measure_distance_mm(unsigned char sensor_id);
+
 //Remote
+void setup_ir();
 bool check_ir_button_pressed();
 unsigned char get_ir_button();
 
