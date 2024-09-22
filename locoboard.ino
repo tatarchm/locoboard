@@ -2,6 +2,7 @@
 
 void process_remote_button()
 {
+  #ifdef USE_REMOTE
   if(check_ir_button_pressed())
   {
     switch(get_ir_button())
@@ -14,34 +15,44 @@ void process_remote_button()
         break;
       }
       #endif
+      #ifdef USE_DISTANCE_SENSOR
       case BTN_1:
       {
         Serial.println("Testing distance sensor");
         test_distance_sensors();
         break;
       }
+      #endif
+      #ifdef USE_POTENTIOMETER
       case BTN_2:
       {
         Serial.println("Testing potentiometer");
         test_potentiometer();
         break;
       }
+      #endif
+      #ifdef USE_SERVO
       case BTN_3:
       {
         Serial.println("Testing servo");
         test_servo();
         break;
       }
+      #endif
+      #ifdef USE_ADDR_LEDS
       case BTN_4:
       {
         Serial.println("Testing address LEDs");
         test_addr_leds();
         break;
       }
+      #endif
     }
   }
+  #endif
 }
 
+#ifdef USE_DISTANCE_SENSOR
 void test_distance_sensors()
 {
   Serial.print("L1: ");
@@ -51,16 +62,22 @@ void test_distance_sensors()
   Serial.print("L3: ");
   Serial.println(measure_distance_mm(DISTANCE_L3));
 }
+#endif
 
 #ifdef USE_DISPLAY
 void test_display()
 {
   clear_display();
+  draw_circle(30, 30, 10, true);
   draw_line(0, 0, 10, 10);
+  draw_pixel(64, 32);
+  draw_rectangle(0, 0, 10, 20, false);
+  draw_text(32, 4, "Hello, world!", 0);
   show();
 }
 #endif
 
+#ifdef USE_POTENTIOMETER
 void test_potentiometer()
 {
   int val = 0;
@@ -71,7 +88,9 @@ void test_potentiometer()
     delay(10);
   }
 }
+#endif
 
+#ifdef USE_SERVO
 void test_servo()
 {
   for(int i=0; i<=180; i+=5)
@@ -82,7 +101,9 @@ void test_servo()
     delay(50);
   }
 }
+#endif
 
+#ifdef USE_ADDR_LEDS
 void test_addr_leds()
 {
   for(int i=0; i<255; i+=20)
@@ -103,6 +124,7 @@ void test_addr_leds()
   set_led_color(LED_3, 0, 0, 0);
   set_led_color(LED_4, 0, 0, 0);
 }
+#endif
 
 void setup()
 {
@@ -111,10 +133,18 @@ void setup()
   #ifdef USE_DISPLAY
   setup_display();
   #endif
+  #ifdef USE_REMOTE
   setup_ir();
+  #endif
+  #ifdef USE_DISTANCE_SENSOR
   setup_distance_sensors();
+  #endif
+  #ifdef USE_SERVO
   setup_servo_pins();
+  #endif
+  #ifdef USE_ADDR_LEDS
   setup_addr_leds();
+  #endif
 }
 
 void loop()
