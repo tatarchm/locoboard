@@ -51,49 +51,54 @@
 // FUNCTION DEFINITIONS
 
 // Motor control
-typedef struct {
+/*typedef struct {
   unsigned char pin_a;
   unsigned char pin_b;
-} Motor;
+} Motor;*/
 
+#ifdef USE_REMOTE
 typedef struct {
   unsigned char button;
   unsigned char keypress_registered;
 } Remote;
-
-typedef struct {
-  unsigned char trig_pin;
-  unsigned char echo_pin;
-  int distance;
-} Sonar;
+#endif
 
 //Motor
-void rotate_motor(unsigned char motor_ind, unsigned char direction, unsigned char speed);
+/*void rotate_motor(unsigned char motor_ind, unsigned char direction, unsigned char speed);
 void stop_motor(unsigned char motor_ind);
-void setup_motor_pins(unsigned char motor_ind, unsigned char pin_a, unsigned char pin_b);
+void setup_motor_pins(unsigned char motor_ind, unsigned char pin_a, unsigned char pin_b);*/
 
+#ifdef USE_SERVO
 // Servo control
 void rotate_servo(unsigned char servo_ind, unsigned char degrees);
 void setup_servo_pins();
+#endif
 
+#ifdef USE_DISTANCE_SENSOR
 //Distance
 void setup_distance_sensors();
 int measure_distance_mm(unsigned char sensor_id);
+#endif
 
+#ifdef USE_REMOTE
 //Remote
 void setup_ir();
 bool check_ir_button_pressed();
 unsigned char get_ir_button();
+#endif
 
+#ifdef USE_POTENTIOMETER
 //Potentiometer
 int read_potentiometer_value();
+#endif
 
+#ifdef USE_ADDR_LEDS
 //Address LEDs
 void setup_addr_leds();
 void set_led_color(unsigned char led_index, unsigned char r, unsigned char g, unsigned char b);
+#endif
 
 #ifdef USE_DISPLAY
-
 //Screen
 void setup_display();
 void clear_display();
@@ -103,5 +108,4 @@ void draw_circle(int x, int y, int radius, bool filled);
 void draw_pixel(int x, int y);
 void draw_text(int x, int y, char* text, unsigned char size);
 void show();
-
 #endif

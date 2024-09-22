@@ -1,29 +1,54 @@
 #include "locoboard.h"
 
-#include <Servo.h>
-#include <VL53L0X.h>
-#include <Wire.h>
-#include <FastLED.h>
+#include <Arduino.h>
 
+#ifdef USE_SERVO
+#include <Servo.h>
+#endif
+
+#ifdef USE_DISTANCE_SENSOR
+#include <VL53L0X.h>
 #define DISTANCE_SW_ADDR 0x73
 // #define USE_CALLBACK_FOR_TINY_RECEIVER
+#endif
+
+#include <Wire.h>
+
+#ifdef USE_ADDR_LEDS
+#include <FastLED.h>
+#endif
+
+#ifdef USE_REMOTE
 #include <TinyIRReceiver.hpp>
-
-#ifdef USE_DISPLAY
-#include <Adafruit_SSD1306.h>
 #endif
 
-Motor motor[2];
+#ifdef USE_DISPLAY
+#include <ss_oled.h>
+#endif
+
+#ifdef USE_DISPLAY
+SSOLED ssoled;
+uint8_t ucBackBuffer[1024];
+#endif
+
+// Motor motor[2];
+#ifdef USE_SERVO
 Servo servo[3];
-Sonar sonar[3];
-VL53L0X distance_sensor[3];
-Remote remote;
-CRGB leds[4];
-
-#ifdef USE_DISPLAY
-Adafruit_SSD1306 display(128, 64, &Wire, -1);
 #endif
 
+#ifdef USE_DISTANCE_SENSOR
+VL53L0X distance_sensor[3];
+#endif
+
+#ifdef USE_REMOTE
+Remote remote;
+#endif
+
+#ifdef USE_ADDR_LEDS
+CRGB leds[4];
+#endif
+
+/*
 void rotate_motor(unsigned char motor_ind, unsigned char direction, unsigned char speed)
 {
   unsigned char v1, v2;
@@ -62,8 +87,9 @@ void setup_motor_pins(unsigned char motor_ind, unsigned char pin_a, unsigned cha
 
   digitalWrite(motor[motor_ind].pin_a, LOW);
   digitalWrite(motor[motor_ind].pin_b, LOW);
-}
+}*/
 
+#ifdef USE_SERVO
 void rotate_servo(unsigned char servo_ind, unsigned char degrees)
 {
   servo[servo_ind].write(degrees);
@@ -75,15 +101,9 @@ void setup_servo_pins()
   servo[1].attach(PIN_SERVO_2);
   servo[2].attach(PIN_SERVO_3);
 }
+#endif
 
-void setup_sonar(unsigned char sonar_ind, unsigned char trig_pin, unsigned char echo_pin)
-{
-  sonar[sonar_ind].echo_pin = echo_pin;
-  sonar[sonar_ind].trig_pin = trig_pin;
-  pinMode(sonar[sonar_ind].trig_pin, OUTPUT);
-  pinMode(sonar[sonar_ind].echo_pin, INPUT);
-}
-
+#ifdef USE_DISTANCE_SENSOR
 void select_distance_sensor(uint8_t i) {
   if (i > 3) return;
 
@@ -110,7 +130,9 @@ int measure_distance_mm(unsigned char sensor_id)
   if(distance_sensor[sensor_id].timeoutOccurred()) return -1;
   else return measurement;
 }
+#endif
 
+#ifdef USE_REMOTE
 void setup_ir()
 {
   if (!initPCIInterruptForTinyReceiver())
@@ -133,12 +155,16 @@ unsigned char get_ir_button()
 {
   return remote.button;
 }
+#endif
 
+#ifdef USE_POTENTIOMETER
 int read_potentiometer_value()
 {
   return analogRead(PIN_POTENTIOMETER);
 }
+#endif
 
+#ifdef USE_ADDR_LEDS
 void setup_addr_leds()
 {
   FastLED.addLeds<WS2812, PIN_ADDR_LED, RGB>(leds, 4);
@@ -149,55 +175,58 @@ void set_led_color(unsigned char led_index, unsigned char r, unsigned char g, un
   leds[led_index] = CRGB(r, g, b);
   FastLED.show();
 }
+#endif
 
 #ifdef USE_DISPLAY
-
 void setup_display()
 {
-  if(!display.begin(SSD1306_SWITCHCAPVCC, 0x3C)) {
-    Serial.println("SSD1306 allocation failed");
-    for(;;); // Don't proceed, loop forever
+  int rc;
+  rc = oledInit(&ssoled, OLED_128x64, -1, 0, 0, 1, -1, -1, -1, 400000L);// Standard HW I2C bus at 400Khz
+
+  if (rc != OLED_NOT_FOUND)
+  {
+    oledFill(&ssoled, 0, 1);
+    delay(2000);
   }
+  else
+  {
+    Serial.println("ERROR: display not initialized.");
+  }
+  oledSetBackBuffer(&ssoled, ucBackBuffer);
 }
 
 void draw_line(int x1, int y1, int x2, int y2)
 {
-  display.drawLine(x1, y1, x2, y2, SSD1306_WHITE);
+  oledDrawLine(&ssoled, x1, y1, x2, y2, 1);
 }
 
 void draw_rectangle(int x1, int y1, int x2, int y2, bool filled)
 {
-  if(!filled) display.drawRect(x1, y1, x2, y2, SSD1306_WHITE);
-  else display.fillRect(x1, y1, x2, y2, SSD1306_WHITE);
+  oledRectangle(&ssoled, x1, y1, x2, y2, 1, filled);
 }
 
 void draw_circle(int x, int y, int radius, bool filled)
 {
-  if(!filled) display.drawCircle(x, y, radius, SSD1306_WHITE);
-  else display.fillCircle(x, y, radius, SSD1306_WHITE);
+  oledEllipse(&ssoled, x, y, radius, radius, 1, filled);
 }
 
 void draw_pixel(int x, int y)
 {
-  display.drawPixel(x, y, SSD1306_WHITE);
+  oledSetPixel(&ssoled, x, y, 1, 1);
 }
 
 void draw_text(int x, int y, char* text, unsigned char size)
 {
-  display.setTextSize(size);
-  display.setTextColor(SSD1306_WHITE);
-  display.setCursor(x, y);
-  display.println(text);
+  oledWriteString(&ssoled, 0, x, y, text, size, 0, 1);
 }
 
 void show()
 {
-  display.display();
+  oledDumpBuffer(&ssoled, NULL);
 }
 
 void clear_display()
 {
-  display.clearDisplay();
+  oledFill(&ssoled, 0, 1);
 }
-
 #endif
