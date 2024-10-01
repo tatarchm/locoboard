@@ -145,15 +145,28 @@ bool check_ir_button_pressed()
 {
   if(TinyReceiverDecode())
   {
+    if(remote.held && remote.button == TinyIRReceiverData.Command)
+      return false;
+
     remote.button = TinyIRReceiverData.Command;
+    remote.held = true;
     return true;
   }
-  else return false;
+  else
+  {
+    remote.held = false;
+    return false;
+  };
 }
 
 unsigned char get_ir_button()
 {
   return remote.button;
+}
+
+bool get_ir_held()
+{
+  return remote.held;
 }
 #endif
 
